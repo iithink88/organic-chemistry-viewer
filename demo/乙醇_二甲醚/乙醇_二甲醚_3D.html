@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>有机化学交互实验室 - 专业版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://3Dmol.org/build/3Dmol-min.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+const CHEM_CONFIG = {
+  "topic": "同分异构体对比：乙醇 vs 二甲醚",
+  "description": "乙醇与二甲醚分子式均为 $C_2H_6O$，却是性质迥异的同分异构体。核心差别在于官能团：乙醇含羟基（$-OH$），二甲醚含醚键（$-O-$）。本页通过 3D 结构对比，理解「结构如何决定性质」——尤其是氢键对沸点与溶解性的决定性影响。",
+  "molecules": [
+    {
+      "id": "ethanol",
+      "name": "乙醇 (Ethanol)",
+      "formula": "C₂H₆O",
+      "sdf": "702\n  -OEChem-07262610353D\n\n  9  8  0     0  0  0  0  0  0999 V2000\n   -1.1712    0.2997    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.0463   -0.5665    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.2175    0.2668    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.0958   -1.2120    0.8819 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.0952   -1.1938   -0.8946 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.1050   -0.3720   -0.0177 H   0  0  0  0  0  0  0  0  0  0  0  0\n    1.2426    0.9307   -0.8704 H   0  0  0  0  0  0  0  0  0  0  0  0\n    1.2616    0.9052    0.8886 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.1291    0.8364    0.8099 H   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  1  0  0  0  0\n  1  9  1  0  0  0  0\n  2  3  1  0  0  0  0\n  2  4  1  0  0  0  0\n  2  5  1  0  0  0  0\n  3  6  1  0  0  0  0\n  3  7  1  0  0  0  0\n  3  8  1  0  0  0  0\nM  END\n> <PUBCHEM_COMPOUND_CID>\n702\n\n> <PUBCHEM_CONFORMER_RMSD>\n0.4\n\n> <PUBCHEM_CONFORMER_DIVERSEORDER>\n1\n\n> <PUBCHEM_MMFF94_PARTIAL_CHARGES>\n3\n1 -0.68\n2 0.28\n9 0.4\n\n> <PUBCHEM_EFFECTIVE_ROTOR_COUNT>\n0\n\n> <PUBCHEM_PHARMACOPHORE_FEATURES>\n2\n1 1 acceptor\n1 1 donor\n\n> <PUBCHEM_HEAVY_ATOM_COUNT>\n3\n\n> <PUBCHEM_ATOM_DEF_STEREO_COUNT>\n0\n\n> <PUBCHEM_ATOM_UDEF_STEREO_COUNT>\n0\n\n> <PUBCHEM_BOND_DEF_STEREO_COUNT>\n0\n\n> <PUBCHEM_BOND_UDEF_STEREO_COUNT>\n0\n\n> <PUBCHEM_ISOTOPIC_ATOM_COUNT>\n0\n\n> <PUBCHEM_COMPONENT_COUNT>\n1\n\n> <PUBCHEM_CACTVS_TAUTO_COUNT>\n1\n\n> <PUBCHEM_CONFORMER_ID>\n000002BE00000001\n\n> <PUBCHEM_MMFF94_ENERGY>\n-1.3096\n\n> <PUBCHEM_FEATURE_SELFOVERLAP>\n10.148\n\n> <PUBCHEM_SHAPE_FINGERPRINT>\n139733 1 18410856563987595332\n21015797 1 18192151726869919494\n\n> <PUBCHEM_SHAPE_MULTIPOLES>\n55.87\n1.48\n0.75\n0.58\n0.08\n0.07\n0\n-0.26\n0\n-0.01\n0\n0.04\n0.01\n0\n\n> <PUBCHEM_SHAPE_SELFOVERLAP>\n84.621\n\n> <PUBCHEM_SHAPE_VOLUME>\n41.5\n\n> <PUBCHEM_COORDINATE_TYPE>\n2\n5\n10\n\n$$$$",
+      "properties": [
+        {
+          "label": "分子式",
+          "value": "C2H6O"
+        },
+        {
+          "label": "分子量",
+          "value": "46.07 g/mol"
+        },
+        {
+          "label": "沸点",
+          "value": "78.4 °C"
+        },
+        {
+          "label": "熔点",
+          "value": "-114.1 °C"
+        },
+        {
+          "label": "极性",
+          "value": "较高（含 -OH，强极性）"
+        },
+        {
+          "label": "氢键供体",
+          "value": "1"
+        },
+        {
+          "label": "氢键受体",
+          "value": "1"
+        },
+        {
+          "label": "IUPAC名称",
+          "value": "ethanol"
+        }
+      ],
+      "analysis": "乙醇含羟基（-OH），O 电负性强，使分子极性高，且 O-H 键可形成分子间氢键。氢键显著提高分子间作用力，因此沸点为 78.4 °C，远高于同分异构体二甲醚；与水可任意比例互溶（亲水）。碳原子采用 sp³ 杂化，C-O 键可旋转。",
+      "highlights": [
+        0,
+        8
+      ]
+    },
+    {
+      "id": "dimethyl-ether",
+      "name": "二甲醚 (Dimethyl Ether)",
+      "formula": "C₂H₆O",
+      "sdf": "8254\n  -OEChem-07262610353D\n\n  9  8  0     0  0  0  0  0  0999 V2000\n    0.0000    0.5330    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    1.1750   -0.2665    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.1750   -0.2665    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.2129   -0.8918    0.8972 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.0436    0.3974    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0\n    1.2129   -0.8918   -0.8972 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.2129   -0.8918    0.8973 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.2128   -0.8919   -0.8973 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.0436    0.3974   -0.0001 H   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  1  0  0  0  0\n  1  3  1  0  0  0  0\n  2  4  1  0  0  0  0\n  2  5  1  0  0  0  0\n  2  6  1  0  0  0  0\n  3  7  1  0  0  0  0\n  3  8  1  0  0  0  0\n  3  9  1  0  0  0  0\nM  END\n> <PUBCHEM_COMPOUND_CID>\n8254\n\n> <PUBCHEM_CONFORMER_RMSD>\n0.4\n\n> <PUBCHEM_CONFORMER_DIVERSEORDER>\n1\n\n> <PUBCHEM_MMFF94_PARTIAL_CHARGES>\n3\n1 -0.56\n2 0.28\n3 0.28\n\n> <PUBCHEM_EFFECTIVE_ROTOR_COUNT>\n0\n\n> <PUBCHEM_PHARMACOPHORE_FEATURES>\n1\n1 1 acceptor\n\n> <PUBCHEM_HEAVY_ATOM_COUNT>\n3\n\n> <PUBCHEM_ATOM_DEF_STEREO_COUNT>\n0\n\n> <PUBCHEM_ATOM_UDEF_STEREO_COUNT>\n0\n\n> <PUBCHEM_BOND_DEF_STEREO_COUNT>\n0\n\n> <PUBCHEM_BOND_UDEF_STEREO_COUNT>\n0\n\n> <PUBCHEM_ISOTOPIC_ATOM_COUNT>\n0\n\n> <PUBCHEM_COMPONENT_COUNT>\n1\n\n> <PUBCHEM_CACTVS_TAUTO_COUNT>\n1\n\n> <PUBCHEM_CONFORMER_ID>\n0000203E00000001\n\n> <PUBCHEM_MMFF94_ENERGY>\n6.0891\n\n> <PUBCHEM_FEATURE_SELFOVERLAP>\n5.074\n\n> <PUBCHEM_SHAPE_FINGERPRINT>\n139733 1 18410856563934789348\n20096714 4 9367340448818790286\n21015797 1 18052817236757859399\n\n> <PUBCHEM_SHAPE_MULTIPOLES>\n55.87\n1.6\n0.71\n0.58\n0\n0.01\n0\n0.23\n0\n0\n0\n0\n0.02\n0\n\n> <PUBCHEM_SHAPE_SELFOVERLAP>\n84.008\n\n> <PUBCHEM_SHAPE_VOLUME>\n42.3\n\n> <PUBCHEM_COORDINATE_TYPE>\n2\n5\n10\n\n$$$$",
+      "properties": [
+        {
+          "label": "分子式",
+          "value": "C2H6O"
+        },
+        {
+          "label": "分子量",
+          "value": "46.07 g/mol"
+        },
+        {
+          "label": "沸点",
+          "value": "-24.8 °C"
+        },
+        {
+          "label": "熔点",
+          "value": "-141.0 °C"
+        },
+        {
+          "label": "极性",
+          "value": "弱极性（C-O-C 键角约 111°，偶极部分抵消）"
+        },
+        {
+          "label": "氢键供体",
+          "value": "0"
+        },
+        {
+          "label": "氢键受体",
+          "value": "1"
+        },
+        {
+          "label": "IUPAC名称",
+          "value": "methoxymethane"
+        }
+      ],
+      "analysis": "二甲醚为醚键结构（C-O-C），分子中无 O-H 键，不能形成分子间氢键，只能靠较弱的偶极-偶极作用与范德华力维系。分子间作用力远弱于乙醇，故沸点骤降至 -24.8 °C（常温常压下为气体）；氧原子可作氢键受体，但不作供体。",
+      "highlights": [
+        0
+      ]
+    }
+  ]
+};
+</script>
+    <style>
+        .mol-container { width: 100%; height: 500px; position: relative; background: radial-gradient(circle, #ffffff 0%, #f8fafc 100%); }
+        .active-card { border-color: #4f46e5; background-color: #f5f3ff; transform: translateY(-2px); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        /* 图例样式 */
+        .cpk-legend { position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px); padding: 0.75rem; border-radius: 1rem; border: 1px solid #e2e8f0; font-size: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 20; }
+        .cpk-item { display: flex; items-center: center; gap: 0.5rem; font-weight: 600; }
+        .cpk-dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.1); }
+
+        /* 错误状态 UI */
+        #error-overlay { display: none; position: absolute; inset: 0; background: rgba(255,255,255,0.9); z-index: 50; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased font-sans">
+    <div class="max-w-7xl mx-auto p-4 md:p-8">
+        <div class="mb-8 border-b border-slate-200 pb-6 flex justify-between items-end">
+            <div>
+                <h1 id="ui-topic" class="text-4xl font-black text-slate-800 tracking-tight text-indigo-700 leading-tight">载入中...</h1>
+                <p id="ui-desc" class="text-slate-500 mt-2 max-w-3xl leading-relaxed text-lg"></p>
+            </div>
+            <div class="hidden md:block text-right">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Chemistry Laboratory v2.0</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-7">
+                <div class="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden relative border border-slate-200">
+                    <div id="error-overlay">
+                        <div class="bg-red-100 text-red-600 p-4 rounded-full mb-4 text-3xl">⚠️</div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">数据加载失败</h3>
+                        <p id="error-msg" class="text-slate-500 mb-6"></p>
+                        <button onclick="location.reload()" class="bg-slate-800 text-white px-6 py-2 rounded-xl font-bold hover:bg-black transition-all">重试</button>
+                    </div>
+
+                    <div id="mol-viewer" class="mol-container"></div>
+                    
+                    <div class="cpk-legend shadow-sm">
+                        <div class="cpk-item"><div class="cpk-dot" style="background: #444;"></div> 碳 (C)</div>
+                        <div class="cpk-item"><div class="cpk-dot" style="background: #fff;"></div> 氢 (H)</div>
+                        <div class="cpk-item"><div class="cpk-dot" style="background: #ff0000;"></div> 氧 (O)</div>
+                        <div class="cpk-item"><div class="cpk-dot" style="background: #0000ff;"></div> 氮 (N)</div>
+                    </div>
+
+                    <div class="absolute bottom-6 left-6 right-6 flex justify-between items-center pointer-events-none">
+                        <div class="flex gap-2 pointer-events-auto bg-white/90 backdrop-blur p-2 rounded-2xl shadow-xl border border-slate-100">
+                            <button onclick="updateStyle('stick')" class="px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all hover:bg-indigo-50 active:scale-95">球棍</button>
+                            <button onclick="updateStyle('sphere')" class="px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all hover:bg-indigo-50 active:scale-95">比例</button>
+                            <div class="w-px h-4 bg-slate-200 mx-1 self-center"></div>
+                            <button id="btn-labels" onclick="toggleLabels()" class="px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all hover:bg-indigo-50 active:scale-95">显示原子标签</button>
+                        </div>
+                        <button onclick="autoRotate()" class="pointer-events-auto bg-indigo-600 text-white p-4 rounded-full shadow-2xl hover:bg-indigo-700 transition-all active:scale-90">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-5 flex flex-col gap-6">
+                <div id="mol-list" class="flex flex-col gap-3 custom-scrollbar overflow-y-auto max-h-[320px] pr-2"></div>
+
+                <div class="bg-indigo-950 text-white p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
+                    <div class="absolute -top-12 -right-12 w-40 h-40 bg-white/5 rounded-full"></div>
+                    <h3 class="text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-400 mb-6">Structural Analysis</h3>
+                    <div id="ui-analysis" class="text-indigo-50 leading-relaxed text-xl font-medium min-h-[140px] mb-8"></div>
+                    <div class="pt-6 border-t border-white/10">
+                        <button onclick="highlightSpecial()" class="w-full bg-white/10 hover:bg-white/20 py-4 rounded-2xl font-bold transition-all border border-white/10 flex items-center justify-center gap-3 active:scale-[0.98]">
+                            <span class="text-xl">✨</span> 标记核心官能团
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let viewer;
+        let currentIdx = 0;
+        let styleType = 'stick';
+        let rotating = false;
+        let labelsEnabled = false;
+
+        function showError(msg) {
+            document.getElementById('error-msg').innerText = msg;
+            document.getElementById('error-overlay').style.display = 'flex';
+        }
+
+        function init() {
+            // 错误检测
+            if (typeof CHEM_CONFIG === 'undefined') {
+                showError("未检测到 data.js 配置文件，请检查脚本路径或生成状态。");
+                return;
+            }
+
+            document.getElementById('ui-topic').innerText = CHEM_CONFIG.topic;
+            document.getElementById('ui-desc').innerHTML = CHEM_CONFIG.description; // 支持 LaTeX
+
+            const listContainer = document.getElementById('mol-list');
+            CHEM_CONFIG.molecules.forEach((m, index) => {
+                const card = document.createElement('div');
+                card.id = `card-${index}`;
+                card.className = `cursor-pointer p-5 rounded-[1.5rem] border-2 transition-all duration-300 hover:shadow-lg ${index === 0 ? 'active-card border-indigo-500' : 'bg-white border-slate-100'}`;
+                card.onclick = () => switchMolecule(index);
+                
+                const props = m.properties.slice(0, 4).map(p => `
+                    <div>
+                        <span class="text-[9px] uppercase text-slate-400 font-extrabold block">${p.label}</span>
+                        <span class="text-xs font-bold text-slate-700">${p.value}</span>
+                    </div>
+                `).join('');
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="font-black text-lg text-slate-800">${m.name}</h4>
+                        <span class="bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold">${m.formula}</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2 pt-3 border-t border-slate-50">${props}</div>
+                `;
+                listContainer.appendChild(card);
+            });
+
+            viewer = $3Dmol.createViewer($('#mol-viewer'), { backgroundColor: 'white' });
+            switchMolecule(0);
+        }
+
+        function switchMolecule(idx) {
+            currentIdx = idx;
+            const mol = CHEM_CONFIG.molecules[idx];
+            
+            // 样式与文本切换
+            CHEM_CONFIG.molecules.forEach((_, i) => {
+                document.getElementById(`card-${i}`).className = `cursor-pointer p-5 rounded-[1.5rem] border-2 transition-all duration-300 ${i === idx ? 'active-card border-indigo-500' : 'bg-white border-slate-100'}`;
+            });
+            
+            const analysisEl = document.getElementById('ui-analysis');
+            analysisEl.innerHTML = mol.analysis || "暂无深度解析内容。";
+            analysisEl.classList.add('fade-in');
+
+            // 3D 渲染逻辑
+            try {
+                viewer.clear();
+                // 彻底解决换行符导致的报错
+                const sdfData = mol.sdf.trim();
+                if (!sdfData) throw new Error("SDF 数据为空");
+                
+                viewer.addModel(sdfData, "sdf");
+                applyStyle();
+                viewer.zoomTo();
+                viewer.render();
+                
+                // 自动刷新 LaTeX
+                if (window.MathJax) MathJax.typesetPromise();
+            } catch (e) {
+                showError("分子模型解析失败，请检查 SDF 格式准确性。");
+                console.error(e);
+            }
+        }
+
+        function applyStyle() {
+            let s = styleType === 'stick' ? {stick: {radius: 0.18}, sphere: {scale: 0.22}} : {sphere: {}};
+            viewer.setStyle({}, s);
+            
+            // 处理标签状态 [新增功能]
+            viewer.removeAllLabels();
+            if (labelsEnabled) {
+                viewer.addPropertyLabels("symbol", {}, {fontColor:'black', fontSize:14, showBackground: false, alignment:'center'});
+            }
+            viewer.render();
+        }
+
+        function toggleLabels() {
+            labelsEnabled = !labelsEnabled;
+            document.getElementById('btn-labels').innerText = labelsEnabled ? "隐藏原子标签" : "显示原子标签";
+            applyStyle();
+        }
+
+        function updateStyle(type) {
+            styleType = type;
+            applyStyle();
+        }
+
+        function autoRotate() {
+            rotating = !rotating;
+            viewer.setSpin(rotating ? [0, 0.8, 0] : [0, 0, 0]);
+        }
+
+        function highlightSpecial() {
+            const mol = CHEM_CONFIG.molecules[currentIdx];
+            if (mol.highlights && mol.highlights.length > 0) {
+                applyStyle();
+                // 突出显示核心索引原子
+                viewer.setStyle({serial: mol.highlights}, {sphere: {color: '#f97316', scale: 0.5}, stick: {color: '#f97316', radius: 0.35}});
+                viewer.render();
+            }
+        }
+
+        $(document).ready(init);
+    </script>
+</body>
+</html>
