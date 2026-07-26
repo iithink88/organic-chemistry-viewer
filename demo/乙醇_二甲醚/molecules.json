@@ -1,0 +1,4 @@
+[
+  { "cid": 702,  "name": "乙醇 (Ethanol)",           "smiles": "CCO",  "highlight": [0, 8] },
+  { "cid": 8254, "name": "二甲醚 (Dimethyl Ether)",   "smiles": "COC",  "highlight": [0] }
+]
