@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>有机化学交互实验室 - 专业版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://3Dmol.org/build/3Dmol-min.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="data.js"></script>
+    <style>
+        .mol-container { width: 100%; height: 500px; position: relative; background: radial-gradient(circle, #ffffff 0%, #f8fafc 100%); }
+        .active-card { border-color: #4f46e5; background-color: #f5f3ff; transform: translateY(-2px); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        /* 图例样式 */
+        .cpk-legend { position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px); padding: 0.75rem; border-radius: 1rem; border: 1px solid #e2e8f0; font-size: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 20; }
+        .cpk-item { display: flex; items-center: center; gap: 0.5rem; font-weight: 600; }
+        .cpk-dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.1); }
+
+        /* 错误状态 UI */
+        #error-overlay { display: none; position: absolute; inset: 0; background: rgba(255,255,255,0.9); z-index: 50; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased font-sans">
+    <div class="max-w-7xl mx-auto p-4 md:p-8">
+        <div class="mb-8 border-b border-slate-200 pb-6 flex justify-between items-end">
+            <div>
+                <h1 id="ui-topic" class="text-4xl font-black text-slate-800 tracking-tight text-indigo-700 leading-tight">载入中...</h1>
+                <p id="ui-desc" class="text-slate-500 mt-2 max-w-3xl leading-relaxed text-lg"></p>
+            </div>
+            <div class="hidden md:block text-right">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Chemistry Laboratory v2.0</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-7">
+                <div class="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden relative border border-slate-200">
+                    <div id="error-overlay">
+                        <div class="bg-red-100 text-red-600 p-4 rounded-full mb-4 text-3xl">⚠️</div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">数据加载失败</h3>
+                        <p id="error-msg" class="text-slate-500 mb-6"></p>
+                        <button onclick="location.reload()" class="bg-slate-800 text-white px-6 py-2 rounded-xl font-bold hover:bg-black transition-all">重试</button>
+                    </div>
+
+                    <div id="mol-viewer" class="mol-container"></div>
+                    
+                    <div class="cpk-legend shadow-sm">
+                        <div class="cpk-item"><div class="cpk-dot" style="background: #444;"></div> 碳 (C)</div>
+                        <div class="cpk-item"><div class="cpk-dot" style="background: #fff;"></div> 氢 (H)</div>
+                        <div class="cpk-item"><div class="cpk-dot" style="background: #ff0000;"></div> 氧 (O)</div>
+                        <div class="cpk-item"><div class="cpk-dot" style="background: #0000ff;"></div> 氮 (N)</div>
+                    </div>
+
+                    <div class="absolute bottom-6 left-6 right-6 flex justify-between items-center pointer-events-none">
+                        <div class="flex gap-2 pointer-events-auto bg-white/90 backdrop-blur p-2 rounded-2xl shadow-xl border border-slate-100">
+                            <button onclick="updateStyle('stick')" class="px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all hover:bg-indigo-50 active:scale-95">球棍</button>
+                            <button onclick="updateStyle('sphere')" class="px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all hover:bg-indigo-50 active:scale-95">比例</button>
+                            <div class="w-px h-4 bg-slate-200 mx-1 self-center"></div>
+                            <button id="btn-labels" onclick="toggleLabels()" class="px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all hover:bg-indigo-50 active:scale-95">显示原子标签</button>
+                        </div>
+                        <button onclick="autoRotate()" class="pointer-events-auto bg-indigo-600 text-white p-4 rounded-full shadow-2xl hover:bg-indigo-700 transition-all active:scale-90">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-5 flex flex-col gap-6">
+                <div id="mol-list" class="flex flex-col gap-3 custom-scrollbar overflow-y-auto max-h-[320px] pr-2"></div>
+
+                <div class="bg-indigo-950 text-white p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
+                    <div class="absolute -top-12 -right-12 w-40 h-40 bg-white/5 rounded-full"></div>
+                    <h3 class="text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-400 mb-6">Structural Analysis</h3>
+                    <div id="ui-analysis" class="text-indigo-50 leading-relaxed text-xl font-medium min-h-[140px] mb-8"></div>
+                    <div class="pt-6 border-t border-white/10">
+                        <button onclick="highlightSpecial()" class="w-full bg-white/10 hover:bg-white/20 py-4 rounded-2xl font-bold transition-all border border-white/10 flex items-center justify-center gap-3 active:scale-[0.98]">
+                            <span class="text-xl">✨</span> 标记核心官能团
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let viewer;
+        let currentIdx = 0;
+        let styleType = 'stick';
+        let rotating = false;
+        let labelsEnabled = false;
+
+        function showError(msg) {
+            document.getElementById('error-msg').innerText = msg;
+            document.getElementById('error-overlay').style.display = 'flex';
+        }
+
+        function init() {
+            // 错误检测
+            if (typeof CHEM_CONFIG === 'undefined') {
+                showError("未检测到 data.js 配置文件，请检查脚本路径或生成状态。");
+                return;
+            }
+
+            document.getElementById('ui-topic').innerText = CHEM_CONFIG.topic;
+            document.getElementById('ui-desc').innerHTML = CHEM_CONFIG.description; // 支持 LaTeX
+
+            const listContainer = document.getElementById('mol-list');
+            CHEM_CONFIG.molecules.forEach((m, index) => {
+                const card = document.createElement('div');
+                card.id = `card-${index}`;
+                card.className = `cursor-pointer p-5 rounded-[1.5rem] border-2 transition-all duration-300 hover:shadow-lg ${index === 0 ? 'active-card border-indigo-500' : 'bg-white border-slate-100'}`;
+                card.onclick = () => switchMolecule(index);
+                
+                const props = m.properties.slice(0, 4).map(p => `
+                    <div>
+                        <span class="text-[9px] uppercase text-slate-400 font-extrabold block">${p.label}</span>
+                        <span class="text-xs font-bold text-slate-700">${p.value}</span>
+                    </div>
+                `).join('');
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="font-black text-lg text-slate-800">${m.name}</h4>
+                        <span class="bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold">${m.formula}</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2 pt-3 border-t border-slate-50">${props}</div>
+                `;
+                listContainer.appendChild(card);
+            });
+
+            viewer = $3Dmol.createViewer($('#mol-viewer'), { backgroundColor: 'white' });
+            switchMolecule(0);
+        }
+
+        function switchMolecule(idx) {
+            currentIdx = idx;
+            const mol = CHEM_CONFIG.molecules[idx];
+            
+            // 样式与文本切换
+            CHEM_CONFIG.molecules.forEach((_, i) => {
+                document.getElementById(`card-${i}`).className = `cursor-pointer p-5 rounded-[1.5rem] border-2 transition-all duration-300 ${i === idx ? 'active-card border-indigo-500' : 'bg-white border-slate-100'}`;
+            });
+            
+            const analysisEl = document.getElementById('ui-analysis');
+            analysisEl.innerHTML = mol.analysis || "暂无深度解析内容。";
+            analysisEl.classList.add('fade-in');
+
+            // 3D 渲染逻辑
+            try {
+                viewer.clear();
+                // 彻底解决换行符导致的报错
+                const sdfData = mol.sdf.trim();
+                if (!sdfData) throw new Error("SDF 数据为空");
+                
+                viewer.addModel(sdfData, "sdf");
+                applyStyle();
+                viewer.zoomTo();
+                viewer.render();
+                
+                // 自动刷新 LaTeX
+                if (window.MathJax) MathJax.typesetPromise();
+            } catch (e) {
+                showError("分子模型解析失败，请检查 SDF 格式准确性。");
+                console.error(e);
+            }
+        }
+
+        function applyStyle() {
+            let s = styleType === 'stick' ? {stick: {radius: 0.18}, sphere: {scale: 0.22}} : {sphere: {}};
+            viewer.setStyle({}, s);
+            
+            // 处理标签状态 [新增功能]
+            viewer.removeAllLabels();
+            if (labelsEnabled) {
+                viewer.addPropertyLabels("symbol", {}, {fontColor:'black', fontSize:14, showBackground: false, alignment:'center'});
+            }
+            viewer.render();
+        }
+
+        function toggleLabels() {
+            labelsEnabled = !labelsEnabled;
+            document.getElementById('btn-labels').innerText = labelsEnabled ? "隐藏原子标签" : "显示原子标签";
+            applyStyle();
+        }
+
+        function updateStyle(type) {
+            styleType = type;
+            applyStyle();
+        }
+
+        function autoRotate() {
+            rotating = !rotating;
+            viewer.setSpin(rotating ? [0, 0.8, 0] : [0, 0, 0]);
+        }
+
+        function highlightSpecial() {
+            const mol = CHEM_CONFIG.molecules[currentIdx];
+            if (mol.highlights && mol.highlights.length > 0) {
+                applyStyle();
+                // 突出显示核心索引原子
+                viewer.setStyle({serial: mol.highlights}, {sphere: {color: '#f97316', scale: 0.5}, stick: {color: '#f97316', radius: 0.35}});
+                viewer.render();
+            }
+        }
+
+        $(document).ready(init);
+    </script>
+</body>
+</html>
